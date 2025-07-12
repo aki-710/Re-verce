@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>投稿アプリ</title>
+</head>
+<header>
+    <div class="logo">
+        <img src="/public/images/Mask_group.png" alt="ロゴ">
+    </div>
+</header>
+<body>
+    <h1>いま何してる？</h1>
+    <form id="postForm" enctype="multipart/form-data">
+        <input type="text" id="textInput" placeholder="テキストを入力">
+        <label for="imageInput">画像を選択:</label>
+        <input type="file" id="imageInput" accept="image/*" title="画像を選択">
+        <button type="submit">投稿</button>
+    </form>
+
+    <hr>
+    <h2>みんなの投稿</h2>
+    <ul id="postList"></ul>
+    <script src="main.js"></script>
+</body>
+<footer>
+</footer>
+</html>

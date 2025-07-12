@@ -1,0 +1,6 @@
+my-twitter-clone/
+├── public/
+│   ├── index.html
+│   └── script.js
+├── server.js
+└── posts.json（←データ保存用）
