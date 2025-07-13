@@ -13,24 +13,33 @@
     </div>
   </header>
 
-  <!-- タブ切り替え -->
-  <div class="tabs">
-    <button class="tab active" id="memoryTab">memory</button>
-    <button class="tab" id="chatTab">chat</button>
-  </div>
+<!-- タブ切り替え -->
+<div class="tabs">
+  <button class="tab active" id="memoryTab">memory</button>
+  <button class="tab" id="chatTab">chat</button>
+  <button class="tab" id="presentTab">present</button> <!-- 新規追加 -->
+</div>
 
-  <!-- スワイプエリア -->
-  <div style="overflow:hidden;">
-    <div id="swipeContainer" class="swipe-container">
-      <!-- memory パネル -->
-      <div class="panel" id="memoryPanel">
-        <form id="postForm" class="post-form popup" enctype="multipart/form-data" style="display: none;">
-          <input type="text" id="textInput" placeholder="テキストを入力" />
-          <input type="file" id="imageInput" accept="image/*" multiple />
-          <button type="submit">投稿</button>
-        </form>
-        <ul id="postList"></ul>
-      </div>
+<!-- スワイプエリア -->
+<div style="overflow:hidden;">
+  <div id="swipeContainer" class="swipe-container" style="width:300%;"> <!-- 3画面分に拡張 -->
+    <!-- memory パネル -->
+    <div class="panel" id="memoryPanel">
+      <!-- 既存のmemory内容 -->
+    </div>
+
+    <!-- chat パネル -->
+    <div class="panel" id="chatPanel">
+      <p>ここに chat コンテンツが入る予定</p>
+    </div>
+
+    <!-- present パネル -->
+    <div class="panel" id="presentPanel">
+      <p>ここが present タブのコンテンツだよ〜🎁✨</p>
+    </div>
+  </div>
+</div>
+
 
       <!-- chat パネル -->
       <div class="panel" id="chatPanel">
@@ -39,16 +48,17 @@
     </div>
   </div>
 
-    <!-- ======= ボトムナビ (任意) ======= -->
+  <!-- ボトムナビ -->
   <nav class="bottom-nav">
     <button class="nav-btn" id="memoryNav">🏠</button>
     <button class="nav-btn" id="chatNav">🎁</button>
-    <button class="nav-btn">＋</button>
+    <button class="nav-btn" id="plusBtn">＋</button>
   </nav>
 
   <footer>
     <p>2025 Re:verce</p>
   </footer>
+
   <script src="main.js"></script>
 </body>
 </html>

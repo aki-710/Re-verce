@@ -60,9 +60,9 @@ header {
 }
 
 form.post-form {
+  width: 80vw;
   display: flex;
   flex-direction: column;
-  gap: 12px;
   margin-bottom: 24px;
   background: #fff;
   padding: 16px;
@@ -143,14 +143,31 @@ ul#postList img {
   color: #000;
 }
 
+/* ポップアップ用 */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* ← 中央にする魔法 */
+  z-index: 1000;
+  background-color: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  padding: 24px;
+}
+
+
+/* アニメーション */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translate(-50%, -40%);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, -50%);
   }
 }
 

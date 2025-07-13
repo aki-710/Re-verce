@@ -1,50 +1,55 @@
 console.log("JS動いてるよ〜");
 
-const form = document.getElementById('postForm');
+// 投稿フォーム関連
+const postForm = document.getElementById('postForm');
 const textInput = document.getElementById('textInput');
 const imageInput = document.getElementById('imageInput');
 const list = document.getElementById('postList');
+const plusBtn = document.getElementById('plusBtn');
+const navBtns = document.querySelectorAll('.nav-btn');
 
-// タブ切り替えとスワイプ処理
-const swipeContainer = document.getElementById('swipeContainer');
-const memoryTab = document.getElementById('memoryTab');
-const chatTab = document.getElementById('chatTab');
-const memoryNav = document.getElementById('memoryNav');
-const chatNav = document.getElementById('chatNav');
+let formVisible = false;
 
-function showPanel(index) {
-  swipeContainer.style.transform = `translateX(-${index * 100}%)`;
-  if (index === 0) {
-    memoryTab.classList.add('active');
-    chatTab.classList.remove('active');
-  } else {
-    chatTab.classList.add('active');
-    memoryTab.classList.remove('active');
-  }
+function showForm() {
+  postForm.style.display = 'block';
+  postForm.classList.add('fade-in');
+  formVisible = true;
 }
 
-// タブ・ナビゲーションのイベント
-memoryTab.addEventListener('click', () => showPanel(0));
-chatTab.addEventListener('click', () => showPanel(1));
-memoryNav.addEventListener('click', () => showPanel(0));
-chatNav.addEventListener('click', () => showPanel(1));
+function hideForm() {
+  postForm.style.display = 'none';
+  postForm.classList.remove('fade-in');
+  formVisible = false;
+}
 
-// スワイプ検出用
-let startX = 0;
-swipeContainer.addEventListener('touchstart', (e) => {
-  startX = e.touches[0].clientX;
-});
-swipeContainer.addEventListener('touchend', (e) => {
-  const endX = e.changedTouches[0].clientX;
-  const diff = startX - endX;
-  if (diff > 50) showPanel(1); // 左スワイプ
-  else if (diff < -50) showPanel(0); // 右スワイプ
+plusBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (formVisible) {
+    hideForm();
+  } else {
+    showForm();
+  }
 });
 
-// 投稿フォーム送信
-form.addEventListener('submit', async (e) => {
+document.addEventListener('click', (e) => {
+  if (formVisible && !postForm.contains(e.target) && e.target !== plusBtn) {
+    hideForm();
+  }
+});
+
+navBtns.forEach((btn) => {
+  if (btn !== plusBtn) {
+    btn.addEventListener('click', () => {
+      if (formVisible) {
+        hideForm();
+      }
+    });
+  }
+});
+
+// 投稿送信
+postForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-
   const text = textInput.value.trim();
   const imageFiles = imageInput.files;
 
@@ -56,7 +61,7 @@ form.addEventListener('submit', async (e) => {
   const formData = new FormData();
   formData.append('text', text);
   for (let i = 0; i < imageFiles.length; i++) {
-    formData.append('image', imageFiles[i]); // 複数画像対応
+    formData.append('image', imageFiles[i]);
   }
 
   try {
@@ -73,13 +78,14 @@ form.addEventListener('submit', async (e) => {
     textInput.value = '';
     imageInput.value = '';
     loadPosts();
+    hideForm();
   } catch (error) {
     console.error('投稿エラー:', error);
     alert('投稿中にエラーが発生しました: ' + error.message);
   }
 });
 
-// 投稿一覧の読み込み
+// 投稿読み込み
 async function loadPosts() {
   try {
     const res = await fetch('/posts');
@@ -108,22 +114,38 @@ async function loadPosts() {
   }
 }
 
-// 初期読み込み
 loadPosts();
 
-const postForm = document.getElementById('postForm');
-const plusBtn = document.querySelectorAll('.nav-btn')[2]; // 3番目の＋ボタン
+// タブとスワイプ
+const swipeContainer = document.getElementById('swipeContainer');
+const memoryTab = document.getElementById('memoryTab');
+const chatTab = document.getElementById('chatTab');
+const memoryNav = document.getElementById('memoryNav');
+const chatNav = document.getElementById('chatNav');
 
-let formVisible = false;
-
-plusBtn.addEventListener('click', () => {
-  formVisible = !formVisible;
-  if (formVisible) {
-    postForm.style.display = 'flex';
-    postForm.classList.add('fade-in');
+function showPanel(index) {
+  swipeContainer.style.transform = `translateX(-${index * 100}%)`;
+  if (index === 0) {
+    memoryTab.classList.add('active');
+    chatTab.classList.remove('active');
   } else {
-    postForm.style.display = 'none';
-    postForm.classList.remove('fade-in');
+    chatTab.classList.add('active');
+    memoryTab.classList.remove('active');
   }
-});
+}
 
+memoryTab.addEventListener('click', () => showPanel(0));
+chatTab.addEventListener('click', () => showPanel(1));
+memoryNav.addEventListener('click', () => showPanel(0));
+chatNav.addEventListener('click', () => showPanel(1));
+
+let startX = 0;
+swipeContainer.addEventListener('touchstart', (e) => {
+  startX = e.touches[0].clientX;
+});
+swipeContainer.addEventListener('touchend', (e) => {
+  const endX = e.changedTouches[0].clientX;
+  const diff = startX - endX;
+  if (diff > 50) showPanel(1);
+  else if (diff < -50) showPanel(0);
+});
