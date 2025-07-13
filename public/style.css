@@ -5,6 +5,13 @@ body {
   color: #222;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* 横スクロール抑止 */
+  height: 100%;
+}
+
 header {
   background-color: #ffffff;
   padding: 12px;
@@ -51,19 +58,17 @@ header {
 }
 
 .panel {
-  width: 100%;
-  padding: 20px;
-  box-sizing: border-box;
+  flex: 0 0 100%;
+  height: calc(100dvh - 160px); /* ← 確実にフッター/ヘッダー分引いた高さに */
   overflow-y: auto;
-  height: calc(100vh - 160px);
+  box-sizing: border-box;
   background-color: #fff;
+  padding: 20px;
 }
 
 form.post-form {
-  width: 80vw;
   display: flex;
   flex-direction: column;
-  margin-bottom: 24px;
   background: #fff;
   padding: 16px;
   border-radius: 12px;
@@ -73,6 +78,7 @@ form.post-form {
 input[type="text"],
 input[type="file"] {
   padding: 12px;
+  margin-bottom: 12px;
   border: 1px solid #aaa;
   border-radius: 10px;
   font-size: 15px;
@@ -81,8 +87,10 @@ input[type="file"] {
   color: #222;
 }
 
-button[type="submit"] {
+button[type="submit"],
+#closeForm {
   padding: 12px;
+  margin-top: 8px;
   background-color: #222;
   color: white;
   font-weight: bold;
@@ -92,16 +100,19 @@ button[type="submit"] {
   transition: background-color 0.2s ease;
 }
 
-button[type="submit"]:hover {
+button[type="submit"]:hover,
+#closeForm:hover {
   background-color: #444;
 }
 
-ul#postList {
+ul#postList,
+ul#chatMessages {
   list-style: none;
   padding: 0;
 }
 
-ul#postList li {
+ul#postList li,
+ul#chatMessages li {
   background: #ffffff;
   padding: 16px;
   border-radius: 12px;
@@ -143,12 +154,11 @@ ul#postList img {
   color: #000;
 }
 
-/* ポップアップ用 */
 .popup {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* ← 中央にする魔法 */
+  transform: translate(-50%, -50%);
   z-index: 1000;
   background-color: #fff;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
@@ -156,10 +166,13 @@ ul#postList img {
   width: 90%;
   max-width: 500px;
   padding: 24px;
+  display: none;
 }
 
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
 
-/* アニメーション */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -169,8 +182,4 @@ ul#postList img {
     opacity: 1;
     transform: translate(-50%, -50%);
   }
-}
-
-.fade-in {
-  animation: fadeIn 0.3s ease-out;
 }
