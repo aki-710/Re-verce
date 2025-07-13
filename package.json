@@ -20,5 +20,13 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aki-710/Re-verce.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aki-710/Re-verce/issues"
+  },
+  "homepage": "https://github.com/aki-710/Re-verce#readme"
 }
