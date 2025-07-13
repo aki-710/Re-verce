@@ -7,11 +7,12 @@ const list = document.getElementById('postList');
 
 const memoryTab = document.getElementById('memoryTab');
 const chatTab = document.getElementById('chatTab');
+const presentTab = document.getElementById('presentTab');
 const memoryNav = document.getElementById('memoryNav');
-const chatNav = document.getElementById('chatNav');
+const presentNav = document.getElementById('presentNav');
 const swipeContainer = document.getElementById('swipeContainer');
 
-// ポップアップ操作
+// ポップアップ制御
 const openFormBtn = document.getElementById('openFormBtn');
 const closeForm = document.getElementById('closeForm');
 
@@ -25,22 +26,25 @@ closeForm.addEventListener('click', () => {
   form.classList.remove('fade-in');
 });
 
-// パネル切り替え
+// パネル切り替え（0=memory, 1=chat, 2=present）
 function showPanel(index) {
   swipeContainer.style.transform = `translateX(-${index * 100}%)`;
-  if (index === 0) {
-    memoryTab.classList.add('active');
-    chatTab.classList.remove('active');
-  } else {
-    chatTab.classList.add('active');
-    memoryTab.classList.remove('active');
-  }
+
+  // タブの表示制御
+  [memoryTab, chatTab, presentTab].forEach((tab, i) => {
+    if (i === index) tab.classList.add('active');
+    else tab.classList.remove('active');
+  });
 }
 
+// タブ
 memoryTab.addEventListener('click', () => showPanel(0));
 chatTab.addEventListener('click', () => showPanel(1));
+presentTab.addEventListener('click', () => showPanel(2));
+
+// ナビ
 memoryNav.addEventListener('click', () => showPanel(0));
-chatNav.addEventListener('click', () => showPanel(1));
+presentNav.addEventListener('click', () => showPanel(2)); // 🎁 は present に！
 
 // スワイプ処理
 let startX = 0;
@@ -50,11 +54,21 @@ swipeContainer.addEventListener('touchstart', (e) => {
 swipeContainer.addEventListener('touchend', (e) => {
   const endX = e.changedTouches[0].clientX;
   const diff = startX - endX;
-  if (diff > 50) showPanel(1);
-  else if (diff < -50) showPanel(0);
+  if (diff > 50) {
+    showPanel(Math.min(2, currentPanelIndex() + 1));
+  } else if (diff < -50) {
+    showPanel(Math.max(0, currentPanelIndex() - 1));
+  }
 });
 
-// 投稿処理
+function currentPanelIndex() {
+  const transform = swipeContainer.style.transform || 'translateX(0%)';
+  const match = transform.match(/-?(\d+)%/);
+  const percent = match ? parseInt(match[1]) : 0;
+  return percent / 100;
+}
+
+// 投稿処理（省略せず）
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -93,6 +107,7 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
+// 投稿一覧読み込み
 async function loadPosts() {
   try {
     const res = await fetch('/posts');
@@ -117,5 +132,4 @@ async function loadPosts() {
   }
 }
 
-// 初期読み込み
 loadPosts();
