@@ -1,3 +1,7 @@
  *{
     color: rgb(95, 0, 0);
  }
+
+ .logo img {
+   height: 15vh;
+ }
