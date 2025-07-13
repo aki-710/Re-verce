@@ -8,7 +8,13 @@ const cors = require('cors');
 const app  = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'posts.json');
+const UPLOAD_DIR  = path.join(__dirname, 'uploads');
 
+/* uploads フォルダを必ず用意 */
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+  console.log('[init] uploads ディレクトリを作成');
+}
 // アップロード先とファイル名の設定
 const storage = multer.diskStorage({
   destination: (_, __, cb) => cb(null, UPLOAD_DIR),
