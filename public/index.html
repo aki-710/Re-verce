@@ -1,29 +1,54 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Re:verce</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Re:verce</title>
 </head>
-<header>
-    <div class="logo">
-        <img src="/images/Mask_group.png" alt="ロゴ">
-    </div>
-</header>
 <body>
-    <form id="postForm" enctype="multipart/form-data">
-        <input type="text" id="textInput" placeholder="テキストを入力">
-        <label for="imageInput">画像を選択:</label>
-        <input type="file" id="imageInput" accept="image/*" title="画像を選択">
-        <button type="submit">投稿</button>
-    </form>
+  <header>
+    <div class="logo">
+      <img src="/images/Mask_group.png" alt="ロゴ" />
+    </div>
+  </header>
 
-    <hr>
-    <h2>これまでの足跡</h2>
-    <ul id="postList"></ul>
-    <script src="main.js"></script>
+  <!-- タブ切り替え -->
+  <div class="tabs">
+    <button class="tab active" id="memoryTab">memory</button>
+    <button class="tab" id="chatTab">chat</button>
+  </div>
+
+  <!-- スワイプエリア -->
+  <div style="overflow:hidden;">
+    <div id="swipeContainer" class="swipe-container">
+      <!-- memory パネル -->
+      <div class="panel" id="memoryPanel">
+        <form id="postForm" class="post-form popup" enctype="multipart/form-data" style="display: none;">
+          <input type="text" id="textInput" placeholder="テキストを入力" />
+          <input type="file" id="imageInput" accept="image/*" multiple />
+          <button type="submit">投稿</button>
+        </form>
+        <ul id="postList"></ul>
+      </div>
+
+      <!-- chat パネル -->
+      <div class="panel" id="chatPanel">
+        <p>ここに chat コンテンツが入る予定</p>
+      </div>
+    </div>
+  </div>
+
+    <!-- ======= ボトムナビ (任意) ======= -->
+  <nav class="bottom-nav">
+    <button class="nav-btn" id="memoryNav">🏠</button>
+    <button class="nav-btn" id="chatNav">🎁</button>
+    <button class="nav-btn">＋</button>
+  </nav>
+
+  <footer>
+    <p>2025 Re:verce</p>
+  </footer>
+  <script src="main.js"></script>
 </body>
-<footer>
-</footer>
 </html>
