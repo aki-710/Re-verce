@@ -1,22 +1,239 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat</title>
+    <meta charset="UTF-8" />
+    <title></title>
     <style>
-        body { font-family: sans-serif; padding: 20px; }
-        #chat { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
-        .user { color: blue; }
-        .ai { color: green; }
+        body {
+            background-color: #1e1e1e;
+            color: #f0f0f0;
+            font-family: 'Helvetica Neue', sans-serif;
+            margin: 0 auto;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 320px;
+            box-sizing: border-box;
+            border: 1px solid #444;
+        }
+
+        #chatContainer {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            background-color: #1e1e1e;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .messageRow {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .userRow {
+            justify-content: flex-end;
+        }
+
+        .assistantRow {
+            justify-content: flex-start;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 16px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            font-size: 16px;
+        }
+
+        .user {
+            background-color: #00c853;
+            color: #fff;
+            border-bottom-right-radius: 0;
+        }
+
+        .assistant {
+            background-color: #333;
+            color: #fff;
+            border-bottom-left-radius: 0;
+        }
+
+        #inputArea {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            background-color: #2b2b2b;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            background-color: #2e2e2e;
+            color: #ffffff;
+            border: 1px solid #444;
+            padding: 10px;
+            resize: none;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .buttons {
+            margin-top: 5px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #666;
+        }
+
+        .send-button {
+            font-size: 20px;
+            padding: 6px 12px;
+        }
     </style>
 </head>
-<body>
-    <h1>Chat with ChatGPT</h1>
-    <div id="chat"></div>
-    <input id="messageInput" type="text" placeholder="話しかけてみて！" />
-    <button id="sendBtn">送信</button>
 
-    <script type="module" src="./API.js"></script>
+<body>
+
+    <div id="chatContainer"></div>
+
+    <div id="inputArea">
+        <textarea id="userInput" rows="3" placeholder="メッセージを入力 (Enterは改行)"></textarea>
+        <div class="buttons">
+            <button onclick="sendToChatGPT()" aria-label="送信" title="送信" class="send-button">📤</button>
+            <button onclick="clearChat()">チャットをクリア</button>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = 'import.meta.env.VITE_OPENAI_API_KEY'; // .envから読み込むよん
+        const apiUrl = 'https://api.openai.com/v1/chat/completions';
+
+        const userInputEl = document.getElementById('userInput');
+        const chatContainer = document.getElementById('chatContainer');
+
+        let messages = [
+            { role: 'system', content: 'あなたは親切な日本語アシスタントです。' }
+        ];
+
+        const inputHistory = [];
+        let historyIndex = -1;
+
+        function appendMessage(text, sender) {
+            const row = document.createElement('div');
+            row.classList.add('messageRow');
+            row.classList.add(sender === 'user' ? 'userRow' : 'assistantRow');
+
+            const msg = document.createElement('div');
+            msg.classList.add('message', sender);
+            msg.textContent = text;
+
+            row.appendChild(msg);
+            chatContainer.appendChild(row);
+
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        async function sendToChatGPT() {
+            const userInput = userInputEl.value.trim();
+            if (!userInput) return;
+
+            messages.push({ role: 'user', content: userInput });
+            appendMessage(userInput, 'user');
+
+            inputHistory.push(userInput);
+            historyIndex = inputHistory.length;
+
+            userInputEl.value = '';
+            appendMessage('読み込み中...', 'assistant');
+
+            try {
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: messages
+                    })
+                });
+
+                const data = await res.json();
+                const reply = data.choices?.[0]?.message?.content?.trim() || '(返答なし)';
+                messages.push({ role: 'assistant', content: reply });
+
+                chatContainer.lastChild.remove();
+                appendMessage(reply, 'assistant');
+            } catch (error) {
+                console.error(error);
+                chatContainer.lastChild.remove();
+                appendMessage('⚠️ エラーが発生しました。', 'assistant');
+            }
+        }
+
+        function clearChat() {
+            messages = [
+                { role: 'system', content: 'あなたは親切な日本語アシスタントです。' }
+            ];
+            chatContainer.innerHTML = '';
+            inputHistory.length = 0;
+            historyIndex = -1;
+        }
+
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        userInputEl.addEventListener('keydown', (event) => {
+            if (!isMobile) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    sendToChatGPT();
+                }
+            }
+
+
+            if (event.key === 'ArrowUp' && !event.shiftKey) {
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    userInputEl.value = inputHistory[historyIndex];
+                    event.preventDefault();
+                }
+            }
+            if (event.key === 'ArrowDown' && !event.shiftKey) {
+                if (historyIndex < inputHistory.length - 1) {
+                    historyIndex++;
+                    userInputEl.value = inputHistory[historyIndex];
+                    event.preventDefault();
+                } else {
+                    historyIndex = inputHistory.length;
+                    userInputEl.value = '';
+                    event.preventDefault();
+                }
+            }
+        });
+    </script>
 </body>
+
 </html>
