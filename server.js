@@ -1,65 +1,66 @@
-// server.js
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const multer = require('multer'); // multerをインポート
+const multer = require('multer');
+const cors = require('cors');
+
 const app = express();
-const PORT = 3000;
-
-// データファイルのパス
+const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'posts.json');
-// 画像アップロード用ディレクトリ
-const UPLOADS_DIR = path.join(__dirname, 'public', 'uploads');
 
-// アップロードディレクトリが存在しない場合は作成
-if (!fs.existsSync(UPLOADS_DIR)) {
-    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-    console.log(`Created uploads directory at: ${UPLOADS_DIR}`);
-}
-
-// Multerのストレージ設定
+// アップロード先とファイル名の設定
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        // public/uploads にファイルを保存
-        cb(null, UPLOADS_DIR);
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, 'uploads'));
     },
-    filename: (req, file, cb) => {
-        // アップロードされた画像にユニークなファイル名を作成
-        // 例: 1678886400000.png
-        cb(null, Date.now() + path.extname(file.originalname));
+    filename: function (req, file, cb) {
+        const uniqueName = Date.now() + '-' + file.originalname;
+        cb(null, uniqueName);
+    }
+});
+const upload = multer({ storage });
+
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// 静的ファイルの配信（HTMLやJS、CSS）
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// 投稿を取得するエンドポイント
+app.get('/posts', (req, res) => {
+    if (fs.existsSync(DATA_FILE)) {
+        try {
+            const posts = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+            res.json(posts);
+        } catch (e) {
+            console.error('Error reading posts.json:', e);
+            res.status(500).json({ error: 'データ読み込み失敗' });
+        }
+    } else {
+        res.json([]);
     }
 });
 
-const upload = multer({ storage: storage });
-
-// JSONボディパーサー (テキストデータ用、Multerより前に配置)
-app.use(express.json());
-// 'public' ディレクトリから静的ファイルを公開
-app.use(express.static('public'));
-
-// 投稿を受け取るAPI (ファイルアップロードも処理)
-// upload.single('image') は、'image'というフィールド名の単一ファイルを処理
-app.post('/post', upload.single('image'), (req, res) => {
-    // req.body.text でテキストデータを取得
+// 投稿を受け取るエンドポイント（複数画像対応）
+app.post('/post', upload.array('image'), (req, res) => {
     const text = req.body.text ? String(req.body.text).trim() : '';
-    // req.file でアップロードされたファイル情報を取得
-    const imageFile = req.file;
+    const imageFiles = req.files || [];
 
-    if (!text && !imageFile) {
+    if (!text && imageFiles.length === 0) {
         return res.status(400).json({ error: 'テキストまたは画像が空です' });
     }
 
     const post = {
-        id: Date.now(), // ユニークなID
-        text, // 投稿テキスト
-        time: new Date().toISOString(), // 投稿時刻 (ISO形式)
+        id: Date.now(),
+        text,
+        time: new Date().toISOString(),
     };
 
-    if (imageFile) {
-        // public ディレクトリからの相対パスで画像パスを保存
-        // 例: /uploads/1678886400000.png
-        post.imagePath = path.join('/uploads', imageFile.filename);
-        console.log(`Image uploaded: ${post.imagePath}`);
+    if (imageFiles.length > 0) {
+        post.imagePath = imageFiles.map(file => path.join('/uploads', file.filename));
+        console.log('画像アップロード:', post.imagePath);
     }
 
     let posts = [];
@@ -67,37 +68,22 @@ app.post('/post', upload.single('image'), (req, res) => {
         try {
             posts = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
         } catch (e) {
-            console.error('Error reading or parsing posts.json:', e);
-            posts = []; // エラー時は空の配列として扱う
+            console.error('Error reading posts.json:', e);
         }
     }
-    posts.unshift(post); // 新しい投稿を配列の先頭に追加
+
+    posts.unshift(post);
 
     try {
         fs.writeFileSync(DATA_FILE, JSON.stringify(posts, null, 2), 'utf8');
         res.json({ message: '投稿完了！', post });
     } catch (e) {
-        console.error('Error writing to posts.json:', e);
-        res.status(500).json({ error: 'サーバーエラー：データの保存に失敗しました' });
-    }
-});
-
-// 投稿一覧を取得するAPI
-app.get('/posts', (req, res) => {
-    if (fs.existsSync(DATA_FILE)) {
-        try {
-            const posts = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-            res.json(posts);
-        } catch (e) {
-            console.error('Error reading or parsing posts.json for GET:', e);
-            res.status(500).json({ error: 'サーバーエラー：データの読み込みに失敗しました' });
-        }
-    } else {
-        res.json([]); // ファイルがない場合は空の配列を返す
+        console.error('Error writing posts.json:', e);
+        res.status(500).json({ error: 'データ保存に失敗しました' });
     }
 });
 
 // サーバー起動
 app.listen(PORT, () => {
-    console.log(`🚀 サーバー起動！→ http://localhost:${PORT}`);
+    console.log(`サーバー起動中: http://localhost:${PORT}`);
 });

@@ -1,3 +1,185 @@
- *{
-    color: rgb(95, 0, 0);
- }
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  color: #222;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* 横スクロール抑止 */
+  height: 100%;
+}
+
+header {
+  background-color: #ffffff;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo img {
+  height: 40px;
+}
+
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  background-color: #ffffff;
+  border-bottom: 1px solid #ddd;
+}
+
+.tab {
+  flex: 1;
+  padding: 14px 0;
+  text-align: center;
+  font-weight: bold;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  transition: color 0.2s, border-bottom 0.2s;
+  color: #555;
+}
+
+.tab.active {
+  border-bottom: 3px solid #333;
+  color: #000;
+}
+
+.swipe-container {
+  display: flex;
+  width: 200%;
+  transition: transform 0.3s ease;
+}
+
+.panel {
+  flex: 0 0 100%;
+  height: calc(100dvh - 160px); /* ← 確実にフッター/ヘッダー分引いた高さに */
+  overflow-y: auto;
+  box-sizing: border-box;
+  background-color: #fff;
+  padding: 20px;
+}
+
+form.post-form {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+input[type="text"],
+input[type="file"] {
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  font-size: 15px;
+  width: 100%;
+  background-color: #f9f9f9;
+  color: #222;
+}
+
+button[type="submit"],
+#closeForm {
+  padding: 12px;
+  margin-top: 8px;
+  background-color: #222;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button[type="submit"]:hover,
+#closeForm:hover {
+  background-color: #444;
+}
+
+ul#postList,
+ul#chatMessages {
+  list-style: none;
+  padding: 0;
+}
+
+ul#postList li,
+ul#chatMessages li {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  color: #333;
+}
+
+ul#postList img {
+  max-width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.08);
+  z-index: 99;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #444;
+  transition: color 0.2s ease;
+}
+
+.nav-btn:hover {
+  color: #000;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  background-color: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  padding: 24px;
+  display: none;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}

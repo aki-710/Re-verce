@@ -4,3 +4,16 @@ my-twitter-clone/
 │   └── script.js
 ├── server.js
 └── posts.json（←データ保存用）
+
+
+UI→機能(modal等)→実装
+
+my-chat-app/
+├── public/
+│   └── index.html
+├── src/
+│   └── main.js ← JavaScriptファイル
+├── .env
+├── .gitignore
+├── vite.config.js
+├── package.json

@@ -1,30 +1,69 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>投稿アプリ</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Re:verce</title>
 </head>
-<header>
-    <div class="logo">
-        <img src="/public/images/Mask_group.png" alt="ロゴ">
-    </div>
-</header>
 <body>
-    <h1>いま何してる？</h1>
-    <form id="postForm" enctype="multipart/form-data">
-        <input type="text" id="textInput" placeholder="テキストを入力">
-        <label for="imageInput">画像を選択:</label>
-        <input type="file" id="imageInput" accept="image/*" title="画像を選択">
-        <button type="submit">投稿</button>
-    </form>
+  <header>
+    <div class="logo">
+      <img src="/images/Mask_group.png" alt="ロゴ" />
+    </div>
+  </header>
 
-    <hr>
-    <h2>みんなの投稿</h2>
-    <ul id="postList"></ul>
-    <script src="main.js"></script>
+  <!-- タブ切り替え -->
+  <div class="tabs">
+    <button class="tab active" id="memoryTab">memory</button>
+    <button class="tab" id="chatTab">chat</button>
+    <button class="tab" id="presentTab">present</button>
+  </div>
+
+  <!-- スワイプエリア -->
+  <div style="overflow:hidden;">
+    <div id="swipeContainer" class="swipe-container">
+      <!-- memory パネル -->
+      <div class="panel" id="memoryPanel">
+        <ul id="postList"></ul>
+      </div>
+
+      <!-- chat パネル -->
+      <div class="panel" id="chatPanel">
+        <h2>Chat 機能</h2>
+        <ul id="chatMessages">
+          <li>（例）こんにちは！</li>
+          <li>（例）ようこそ Re:verce へ！</li>
+        </ul>
+      </div>
+
+      <!-- present パネル -->
+      <div class="panel" id="presentPanel">
+        <h2>Present 機能</h2>
+        <p>ここにプレゼント機能が入ります。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 投稿フォーム -->
+  <form id="postForm" class="post-form popup" style="display: none;" enctype="multipart/form-data">
+    <input type="text" id="textInput" placeholder="テキストを入力" />
+    <input type="file" id="imageInput" accept="image/*" multiple />
+    <button type="submit">投稿</button>
+    <button type="button" id="closeForm">キャンセル</button>
+  </form>
+
+  <!-- ボトムナビ -->
+  <nav class="bottom-nav">
+    <button class="nav-btn" id="memoryNav">🏠</button>
+    <button class="nav-btn" id="presentNav">🎁</button>
+    <button class="nav-btn" id="openFormBtn">＋</button>
+  </nav>
+
+  <footer>
+    <p>2025 Re:verce</p>
+  </footer>
+
+  <script src="main.js"></script>
 </body>
-<footer>
-</footer>
 </html>

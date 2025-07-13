@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        #chat { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
+        .user { color: blue; }
+        .ai { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Chat with ChatGPT</h1>
+    <div id="chat"></div>
+    <input id="messageInput" type="text" placeholder="話しかけてみて！" />
+    <button id="sendBtn">送信</button>
+
+    <script type="module" src="./API.js"></script>
+</body>
+</html>
